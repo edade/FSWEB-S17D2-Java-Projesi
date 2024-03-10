@@ -35,14 +35,14 @@ public class DeveloperController {
     }
 
 
-    @PostMapping("/workintech/developers")
+    @PostMapping
      @ResponseStatus(HttpStatus.CREATED)
     public DeveloperResponse save(@RequestBody Developer developer){
         Developer createDeveloper = DeveloperFactory.createDeveloper(developer,taxable);
         if(Objects.nonNull(createDeveloper)){
-            developers.put(developer.getId(), developer);
+            developers.put(developer.getId(), createDeveloper);
         }
-       return new DeveloperResponse(developer.getId(), developer.getName(), developer.getSalary(), developer.getExperience());
+       return new DeveloperResponse(createDeveloper.getId(), createDeveloper.getName(), createDeveloper.getSalary(), createDeveloper.getExperience());
     }
 
     @GetMapping
@@ -56,5 +56,26 @@ public class DeveloperController {
        return new DeveloperResponse(developer.getId(), developer.getName(), developer.getSalary(), developer.getExperience());
     }
 
+    @PutMapping("/{id}")
+    public  DeveloperResponse update(@PathVariable Integer id, @RequestBody Developer developer){
+       if (Objects.isNull(developer)){
+           return  new DeveloperResponse(null,null,null,null);
+       }
+       Developer updatedDeveloper = DeveloperFactory.createDeveloper(developer,taxable);
+       this.developers.put(id, updatedDeveloper);
+       return new DeveloperResponse(updatedDeveloper.getId(), updatedDeveloper.getName(), updatedDeveloper.getSalary(), updatedDeveloper.getExperience());
+
+    }
+
+    @DeleteMapping("/{id}")
+    public DeveloperResponse delete (@PathVariable Integer id){
+       Developer developer = developers.get(id);
+       if(Objects.isNull(developer)){
+           return new DeveloperResponse(null,null,null,null);
+       }
+       developers.remove(id);
+       return  new DeveloperResponse(developer.getId(), developer.getName(), developer.getSalary(), developer.getExperience());
+
+    }
 
 }
